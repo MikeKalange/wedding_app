@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Information System</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Custom styles */
+      .user-image-small {
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+      }
+
+      .user-image-large {
+        width: 100%;
+        max-width: 1000px;
+        height: auto;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2 class="mb-4">User Information System</h2>
+      <!-- Search input -->
+      <div class="form-group">
+        <input
+          type="text"
+          id="searchInput"
+          class="form-control"
+          placeholder="Search by code number or name"
+        />
+      </div>
+      <!-- Search button -->
+      <button class="btn btn-primary mb-3" onclick="searchUser()">
+        Search
+      </button>
+
+      <!-- Table to display search results -->
+      <table id="userTable" class="table table-striped" style="display: none">
+        <thead>
+          <tr>
+            <th>Code Number</th>
+            <th>Name</th>
+            <th>Image</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+
+      <!-- Modal for displaying user details -->
+      <div
+        class="modal fade"
+        id="userModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="userModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="userModalLabel">User Details</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="userModalBody">
+              <!-- User details will be displayed here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      // Sample user data (for demonstration)
+      const users = [
+        {
+          code: "1110111",
+          name: "Dr.and Mrs Nathan Phiri",
+          image: "images/Dr.and Mrs Nathan Phiri.png",
+        },
+        {
+          code: "1110112",
+          name: "Dr.and Mrs Miti",
+          image: "images/Dr.and Mrs Miti..png",
+        },
+        {
+          code: "1110113",
+          name: "Dr.and Mrs Amsal",
+          image: "images/Dr.and Mrs Amsal.png",
+        },
+        {
+          code: "1110123",
+          name: "Dr.and Mrs MC Robert",
+          image: "images/Dr.and Mrs MC Robert..png",
+        },
+        {
+          code: "1110114",
+          name: "Dr.and Mrs Langa",
+          image: "images/Dr.and Mrs Langa..png",
+        },
+        {
+          code: "1110115",
+          name: "Mr and Mrs Siwale",
+          image: "images/Mr and Mrs Siwale.png",
+        },
+        {
+          code: "1110116",
+          name: "Rev and Pastor Sikazwe",
+          image: "images/Rev and Pastor sikazwe.png",
+        },
+        {
+          code: "1110124",
+          name: "Pastor and Mrs Sitali",
+          image: "images/Pastor and Mrs Sitali..png",
+        },
+        {
+          code: "1110117",
+          name: "Dr.Tecla",
+          image: "images/Dr.Tecla..png",
+        },
+        {
+          code: "1110118",
+          name: "Dr.and Mrs Mwamba",
+          image: "images/Dr.and Mrs Mwamba..png",
+        },
+        {
+          code: "1110119",
+          name: "Dr And Mrs Nguni",
+          image: "images/Dr And Mrs Nguni..png",
+        },
+        {
+          code: "1110125",
+          name: "Pastor,and Mrs Mulimba",
+          image: "images/Pastor,and Mrs Mulimba..png",
+        },
+        {
+          code: "1110126",
+          name: "Mrs Bwalya and Sr.Cecilia",
+          image: "images/Mrs Bwalya and Sr.Cecilia..png",
+        },
+        {
+          code: "1110120",
+          name: "Mr and Mrs William Mwansa",
+          image: "images/Mr and Mrs William Mwansa .png",
+        },
+        {
+          code: "1110121",
+          name: "Mr and Mrs Alifeyo Mwansa",
+          image: "images/Mr and Mrs Alifeyo Mwansa..png",
+        },
+        {
+          code: "1110122",
+          name: "Modester and Hellen",
+          image: "images/Modester and Hellen..png",
+        },
+        {
+          code: "1110127",
+          name: "Mr and Mrs Felix Kunda",
+          image: "images/felix kunda.png",
+        },
+        {
+          code: "1110128",
+          name: "Mr kunda Felix(Snr) and Fr. Kunda",
+          image: "images/fr kunda.png",
+        },
+        {
+          code: "1110129",
+          name: "Mr and Mrs kunda ian",
+          image: "images/Kunda Ian.png",
+        },
+        {
+          code: "1110130",
+          name: "Mercy and Thandiwe",
+          image: "images/mercy and thandiwe.png",
+        },
+        {
+          code: "1110131",
+          name: "Christator and Joshua Kunda",
+          image: "images/joshua kunda.png",
+        },
+        {
+          code: "1110132",
+          name: "Dr.Kunda K and Prudence",
+          image: "images/Dr.Kunda K and Prudence.png",
+        },
+        {
+          code: "1110133",
+          name: "Mr and Mrs Simwanza",
+          image: "images/simwanza.png",
+        },
+        {
+          code: "1110134",
+          name: "Mr and Mrs Liche",
+          image: "images/liche.png",
+        },
+        {
+          code: "1110135",
+          name: "Mrs Liche P and janet tembo",
+          image: "images/janet tembo.png",
+        },
+        {
+          code: "1110136",
+          name: "Mr and Mrs Mulenga MC",
+          image: "images/Mr and Mrs Mulenga MC.png",
+        },
+        {
+          code: "1110137",
+          name: "Mr and Mrs Mulenga",
+          image: "images/mulenga.png",
+        },
+        {
+          code: "1110138",
+          name: "Kondwani and Friday",
+          image: "images/friday.png",
+        },
+        {
+          code: "1110139",
+          name: "Mr and Mrs Kapempela",
+          image: "images/kapempela.png",
+        },
+        {
+          code: "1110140",
+          name: "Pastor and Mrs Musokwa",
+          image: "images/musokwa.png",
+        },
+        {
+          code: "1110141",
+          name: "Maimbolwa and Lisca",
+          image: "images/lisca.png",
+        },
+        {
+          code: "1110142",
+          name: "Manase and Ivy",
+          image: "images/ivy.png",
+        },
+        {
+          code: "1110143",
+          name: "Mr and Mrs Bukankala",
+          image: "images/bukankala.png",
+        },
+        {
+          code: "1110144",
+          name: "Mr and Mrs Kafwamfwa",
+          image: "images/kafwanfwa.png",
+        },
+        {
+          code: "1110145",
+          name: "Sandra and Scholastica",
+          image: "images/scholastica.png",
+        },
+        {
+          code: "1110146",
+          name: "Sr. Pelekamoyo",
+          image: "images/give life.png",
+        },
+        {
+          code: "1110147",
+          name: "Dr and  Mrs Phiri",
+          image: "images/phiri 2.png",
+        },
+        {
+          code: "1110148",
+          name: "Uncle Loyd, Aunt and mum",
+          image: "images/uncle loyd.png",
+        },
+        {
+          code: "1110149",
+          name: "sunge and mrs mponda ,E.",
+          image: "images/mponda.png",
+        },
+        {
+          code: "1110150",
+          name: "Mr and Mrs Simutulo",
+          image: "images/simutulo.png",
+        },
+        {
+          code: "1110151",
+          name: "Mrs Katongo, Mrs Chandamali, Mum.",
+          image: "images/katongo.png",
+        },
+        {
+          code: "1110152",
+          name: "Mrs phiri, F. and Pastor B.",
+          image: "images/pastor b.png",
+        },
+        {
+          code: "1110153",
+          name: "Chiimbwe and Nkanga",
+          image: "images/nkanga.png",
+        },
+        {
+          code: "1110154",
+          name: "Jennifer Salowu",
+          image: "images/salowu.png",
+        },
+        {
+          code: "1110155",
+          name: "Mr and mrs chavula",
+          image: "images/chavula.png",
+        },
+        {
+          code: "1110156",
+          name: "mr and mrs nkandu",
+          image: "images/nkandu.png",
+        },
+        {
+          code: "1110157",
+          name: "mr and mrs simbunji",
+          image: "images/simbuji.png",
+        },
+        {
+          code: "1110158",
+          name: "ms bwalya chilufya",
+          image: "images/chilufya.png",
+        },
+        {
+          code: "1110159",
+          name: "dr godfree chigeza",
+          image: "images/chigeza.png",
+        },
+        {
+          code: "1110160",
+          name: "ms chongobanda",
+          image: "images/chongobanda.png",
+        },
+        {
+          code: "1110161",
+          name: "mr and ms angomwile",
+          image: "images/angomwile.png",
+        },
+        {
+          code: "1110162",
+          name: "newton and shavon",
+          image: "images/shavon.png",
+        },
+        {
+          code: "1110163",
+          name: "ms sylvia kamano",
+          image: "images/kamano.png",
+        },
+        {
+          code: "1110164",
+          name: "Mr Joseph phiri",
+          image: "images/phiri 2.png",
+        },
+        {
+          code: "1110165",
+          name: "Mwamba and Chipego",
+          image: "images/choliso and chipego.png",
+        },
+        {
+          code: "1110166",
+          name: "Mr tony",
+          image: "images/tony.png",
+        },
+        {
+          code: "1110167",
+          name: "Bana madik",
+          image: "images/madik.png",
+        },
+        {
+          code: "1110168",
+          name: "Mr samuel banda",
+          image: "images/samuel banda.png",
+        },
+        {
+          code: "1110169",
+          name: "Ndaji and Mable",
+          image: "images/mbale.png",
+        },
+        {
+          code: "1110170",
+          name: "Mrs kayanika and Angela",
+          image: "images/angela.png",
+        },
+        {
+          code: "1110171",
+          name: "Mr and Mrs simuchimba",
+          image: "images/simuchimba.png",
+        },
+        {
+          code: "1110172",
+          name: "Bana Mupeta",
+          image: "images/mupeta.png",
+        },
+      ];
+
+      // Function to search for a user
+      function searchUser() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const filteredUsers = users.filter(
+          (user) =>
+            user.code.toLowerCase().includes(searchTerm) ||
+            user.name.toLowerCase().includes(searchTerm)
+        );
+
+        if (filteredUsers.length > 0) {
+          displaySearchResults(filteredUsers);
+        } else {
+          document.getElementById("userTable").style.display = "none";
+          alert("User not found.");
+        }
+      }
+
+      // Function to display search results in a table
+      function displaySearchResults(users) {
+        const tableBody = document.getElementById("userTableBody");
+        tableBody.innerHTML = "";
+
+        users.forEach((user) => {
+          const row = `
+          <tr>
+            <td>${user.code}</td>
+            <td>${user.name}</td>
+            <td><img src="${user.image}" class="user-image-small" alt="User Image" onclick="showUserDetails('${user.code}', '${user.name}', '${user.image}')"></td>
+          </tr>
+        `;
+          tableBody.innerHTML += row;
+        });
+
+        document.getElementById("userTable").style.display = "table";
+      }
+
+      // Function to show user details in a modal
+      function showUserDetails(code, name, image) {
+        const modalBody = document.getElementById("userModalBody");
+        modalBody.innerHTML = `
+        <p><strong>Code Number:</strong> ${code}</p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Image:</strong> <img src="${image}" class="user-image-large" alt="User Image"></p>
+      `;
+
+        $("#userModal").modal("show");
+      }
+    </script>
+  </body>
+</html>
